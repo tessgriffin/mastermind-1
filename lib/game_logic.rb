@@ -1,7 +1,7 @@
 require_relative 'response'
 
 class GameLogic
-  attr_reader :secret, :spot_count, :element_count
+  attr_reader :secret, :spot_count, :element_count, :turns, :game_time
 
   def generate
     array = ["r", "g", "b", "y"]
@@ -14,6 +14,8 @@ class GameLogic
 
   def initialize
     @secret = generate
+    @turns = 0
+    @game_time = Time.now
   end
 
   def position_matching(input)
@@ -56,22 +58,32 @@ class GameLogic
   end
 
   def number_of_matching_characters(secret, input)
-    secret.chars.sort.each_with_index.count do |char, i|
-      char == input.chars.sort[i]
+    grouped_elements(secret).each.reduce(0) do |sum, (element, usages)|
+      input_group = grouped_elements(input)[element] || []
+      sum + [usages.size, input_group.size].min
     end
   end
 
+#returns a hash where the key is the character, and value is an array with each entry being the times it appears
+#in sequence. For example r => [r, r, r]
+  def grouped_elements(str)
+    str.chars.group_by(&:itself)
+  end
 
   def execute(input)
     position = position_matching(input)
     matching_elements = number_of_matching_characters(@secret, input)
     if input == @secret
-      Response.new(:message => "You Win!", :status => :won)
+      @turns += 1
+      game_time_seconds = Time.now.sec - @game_time.sec
+      game_time_minutes = Time.now.min - @game_time.min
+      Response.new(:message => "Congratulations! You guessed the sequence '#{@secret}' in #{@turns} guesses in #{game_time_minutes} minutes and #{game_time_seconds} seconds", :status => :won)
     elsif input == "c"
       Response.new(:message => "#{@secret}", :status => :continue)
     elsif input == "q"
-      Response.new(:message => "Game quit", :status => :won)
+      Response.new(:message => "Game quit", :status => :quit)
     else 
+      @turns += 1
       Response.new(:message => "'#{input}' has #{matching_elements} matching elements at #{position} correct positions", :status => :continue)
     end
   end
