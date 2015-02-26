@@ -1,7 +1,7 @@
 require_relative 'response'
 
 class GameLogic
-  attr_reader :spot_count, :element_count, :turns, :game_time
+  attr_reader :spot_count, :element_count, :turns, :start_time, :end_time
   attr_accessor :secret
 
   def generate
@@ -16,7 +16,7 @@ class GameLogic
   def initialize
     @secret = generate
     @turns = 0
-    @game_time = Time.now
+    @start_time = Time.now
   end
 
   def position_matching(input)
@@ -29,29 +29,6 @@ class GameLogic
       end
     end
     @spot_count
-  end
-
-#loop through the guess array
-#if answer.include g
-#match = answer.find_index(g)
-#match = nil this deletes the match
-#count += 1
-
-  def match_elements(input)
-    array_of_colors = ["r", "g", "b", "y"]
-    @element_count = 0
-    difference = 0
-    input_array = input.chars
-    secret_array = @secret.chars
-    secret_count = array_of_colors.map do |color|
-      secret_array.count(color)
-    end
-    input_count = array_of_colors.map do |color|
-      input_array.count(color)
-    end
-    print secret_count
-    print input_count
-
   end
 
   def number_of_matching_characters(secret, input)
@@ -67,19 +44,33 @@ class GameLogic
     str.chars.group_by(&:itself)
   end
 
+  def stop_tracking_time
+    @end_time = Time.now
+  end
+
+  def elapsed_time
+    total_time_in_seconds = end_time - start_time
+    game_seconds = (total_time_in_seconds % 60).to_i
+    game_minutes = (total_time_in_seconds / 60).to_i
+    "#{game_minutes} minutes, #{game_seconds} seconds"
+  end
+
   def execute(input)
+    input = input.downcase
     position = position_matching(input)
     matching_elements = number_of_matching_characters(@secret, input)
     if input == @secret
       @turns += 1
-      total_time_in_seconds = Time.now - @game_time
-      game_time_seconds = (total_time_in_seconds % 60).to_i
-      game_time_minutes = (total_time_in_seconds / 60).to_i
-      Response.new(:message => "Congratulations! You guessed the sequence '#{@secret}' in #{@turns} guesses in #{game_time_minutes} minutes and #{game_time_seconds} seconds", :status => :won)
+      stop_tracking_time
+      Response.new(:message => "Congratulations! You guessed the sequence '#{@secret}' in #{@turns} guesses in #{elapsed_time}", :status => :won)
     elsif input == "c"
       Response.new(:message => "#{@secret}", :status => :continue)
     elsif input == "q"
       Response.new(:message => "Game quit", :status => :quit)
+    elsif input.size > 4
+      Response.new(:message => "Your guess is too long", :status => :continue)
+    elsif input.size < 4
+      Response.new(:message => "Your guess is too short", :status => :continue)
     else 
       @turns += 1
       Response.new(:message => "'#{input}' has #{matching_elements} matching elements at #{position} correct positions", :status => :continue)
@@ -87,34 +78,3 @@ class GameLogic
   end
 end
 
-
-#game = GameLogic.new
-#print game.number_of_matching_characters("bbry", "ybrb")
-#puts game.secret.join
-#puts game.position_matching("rrrr")
-
-
-#class Game
-#  def initialize(random_answer_generator)
-#    @random_answer_generator = random_answer_generator
-#  end
-#end
-
-#class FakeAnswerGenerator
-#  def initialize(known_answer)
-#    @known_answer = known_answer
-#  end
-
-#  def generate_random_answer
-#    @known_answer
-#  end
-#end
-
-#class RealAnswerGenerator
-#  def generate_random_answer
-    # I don't know you figure it out
-#  end
-#end
-
-
-#Game.new(FakeAnswerGenerator.new("RRGYB"))
