@@ -5,6 +5,7 @@ require './lib/main_menu'
 printer = Printer.new
 
 printer.greeting
+printer.fancy_greeting
 printer.menu
 
 main_menu = true

@@ -1,7 +1,8 @@
 require_relative 'response'
 
 class GameLogic
-  attr_reader :secret, :spot_count, :element_count, :turns, :game_time
+  attr_reader :spot_count, :element_count, :turns, :game_time
+  attr_accessor :secret
 
   def generate
     array = ["r", "g", "b", "y"]
@@ -29,10 +30,6 @@ class GameLogic
     end
     @spot_count
   end
-
-#  def cheat
-#    print @secret.join
-#  end
 
 #loop through the guess array
 #if answer.include g
@@ -75,8 +72,9 @@ class GameLogic
     matching_elements = number_of_matching_characters(@secret, input)
     if input == @secret
       @turns += 1
-      game_time_seconds = Time.now.sec - @game_time.sec
-      game_time_minutes = Time.now.min - @game_time.min
+      total_time_in_seconds = Time.now - @game_time
+      game_time_seconds = (total_time_in_seconds % 60).to_i
+      game_time_minutes = (total_time_in_seconds / 60).to_i
       Response.new(:message => "Congratulations! You guessed the sequence '#{@secret}' in #{@turns} guesses in #{game_time_minutes} minutes and #{game_time_seconds} seconds", :status => :won)
     elsif input == "c"
       Response.new(:message => "#{@secret}", :status => :continue)

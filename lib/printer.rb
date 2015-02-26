@@ -4,6 +4,15 @@ class Printer
     puts "Welcome to Mastermind!"
   end
 
+  def fancy_greeting                                              
+    puts ",-.-.          |                   o         |"
+    puts "| | |,---.,---.|--- ,---.,---.,-.-..,---.,---|"
+    puts "| | |,---|`---.|    |---'|    | | |||   ||   |"
+    puts "` ' '`---^`---'`---'`---'`    ` ' '``   '`---'"
+
+    puts "\n"                                                                           
+  end
+
   def menu
     puts "Would you like to (p)lay, read the (i)nstructions, or (q)uit?"
     print ">"

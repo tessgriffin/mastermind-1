@@ -13,18 +13,19 @@ class GameLogicTest < Minitest::Test
     refute_equal nil, sequence
   end
 
-  def test_it_cheats
-    skip
+  def test_it_can_count_matching_positions
     game = GameLogic.new
-    sequence = game.generate
-    assert_equal "BBGB", game.cheat
+    input = "rrrr"
+    game.secret = "rbbb"
+    assert_equal 1, game.position_matching(input)
   end
 
-  def test_it_wins
-    mm = GameLogic.new
-    sequence = mm.generate
-    result = mm.execute(sequence)
-    assert result.message.downcase.include?("win")
+  def test_it_can_count_matching_characters
+    game = GameLogic.new
+    input = "rrrr"
+    game.secret = "rrbb"
+    assert_equal 2, game.number_of_matching_characters(game.secret, input)
+
   end
 
 end
