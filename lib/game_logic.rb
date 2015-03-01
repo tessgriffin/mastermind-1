@@ -1,7 +1,7 @@
 require_relative 'response'
 
 class GameLogic
-  attr_reader :spot_count, :element_count, :turns, :start_time, :end_time
+  attr_reader :position, :matching_elements, :turns, :start_time, :end_time
   attr_accessor :secret
 
   def generate
@@ -20,15 +20,21 @@ class GameLogic
   end
 
   def position_matching(input)
-    @spot_count = 0
+    @position = 0
     input_array = input.chars
     results = @secret.chars.zip(input_array)
     results.map do |result|
       if result[0] == result[1]
-        @spot_count += 1
+        @position += 1
       end
     end
-    @spot_count
+    @position
+  end
+
+#returns a hash where the key is the character, and value is an array with each entry being the times it appears
+#in sequence. For example r => [r, r, r]
+  def grouped_elements(str)
+    str.chars.group_by(&:itself)
   end
 
   def number_of_matching_characters(secret, input)
@@ -36,12 +42,6 @@ class GameLogic
       input_group = grouped_elements(input)[element] || []
       sum + [usages.size, input_group.size].min
     end
-  end
-
-#returns a hash where the key is the character, and value is an array with each entry being the times it appears
-#in sequence. For example r => [r, r, r]
-  def grouped_elements(str)
-    str.chars.group_by(&:itself)
   end
 
   def stop_tracking_time
@@ -60,25 +60,54 @@ class GameLogic
   end
 
   def execute(input)
+    parse_input(input)
+    if input == @secret
+      winning_guess
+    elsif input == "c"
+      cheat
+    elsif input == "q"
+      quit_in_game
+    elsif input.size != 4
+      incorrect_size(input) 
+    else 
+      incorrect_guess(input)
+    end
+  end
+
+  def parse_input(input)
     input = input.downcase
     position = position_matching(input)
-    matching_elements = number_of_matching_characters(@secret, input)
-    if input == @secret
-      increment_turn
-      stop_tracking_time
-      Response.new(:message => "Congratulations! You guessed the sequence '#{@secret}' in #{@turns} guesses in #{elapsed_time}", :status => :won)
-    elsif input == "c"
-      Response.new(:message => "#{@secret}", :status => :continue)
-    elsif input == "q"
-      Response.new(:message => "Game quit, returning to main menu", :status => :quit)
-    elsif input.size > 4
+    @matching_elements = number_of_matching_characters(@secret, input)
+  end
+
+  def winning_guess
+    increment_turn
+    stop_tracking_time
+    Response.new(:message => "Congratulations! You guessed the sequence '#{@secret}' in #{@turns} guesses in #{elapsed_time}", :status => :won)
+  end
+
+  def incorrect_guess(input)
+    increment_turn
+    Response.new(:message => "'#{input}' has #{matching_elements} matching elements at #{position} correct positions", :status => :continue)
+  end
+
+  def incorrect_size(input)
+    if input.size > 4
       Response.new(:message => "Your guess is too long", :status => :continue)
     elsif input.size < 4
       Response.new(:message => "Your guess is too short", :status => :continue)
-    else 
-      increment_turn
-      Response.new(:message => "'#{input}' has #{matching_elements} matching elements at #{position} correct positions", :status => :continue)
     end
   end
+
+  def quit_in_game
+    Response.new(:message => "Game quit, returning to main menu", :status => :quit)
+  end
+
+  def cheat
+    Response.new(:message => "#{@secret}", :status => :continue)
+  end
+
+
+
 end
 

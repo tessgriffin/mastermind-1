@@ -27,16 +27,9 @@ class MainMenu
         response = game.execute(input)
         puts response.message
         if response.status == :won
-          printer.play_again
-          play_again_input = gets.chomp
-          if play_again_input.include?("r")
-            run
-          else
-            quit
-          end
+          play_again
         elsif response.status == :quit
-          run
-          throw(:quit)
+          quit_to_menu
         end
       end
     end
@@ -47,4 +40,27 @@ class MainMenu
   def quit
     printer.exit
   end
+
+  def quit_to_menu
+    run
+    throw(:quit)
+  end
+
+  def play_again
+    printer.play_again
+    play_again_input = gets.chomp
+    if play_again_input.include?("r")
+      run
+    else
+      quit
+    end
+  end
+
+
+
+
+
+
+
+
 end
