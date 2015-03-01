@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH.unshift(File.expand_path("../../lib", __FILE__))
+
+require 'game_logic'
+require 'printer'
+require 'main_menu'
+require 'game_loop'
+
+printer = Printer.new
+
+printer.greeting
+printer.fancy_greeting
+
+MainMenu.new.run

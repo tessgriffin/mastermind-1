@@ -74,6 +74,8 @@ class GameLogic
     end
   end
 
+  private
+
   def parse_input(input)
     input = input.downcase
     position = position_matching(input)
