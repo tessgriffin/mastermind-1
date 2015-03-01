@@ -55,24 +55,28 @@ class GameLogic
     "#{game_minutes} minutes, #{game_seconds} seconds"
   end
 
+  def increment_turn
+    @turns += 1
+  end
+
   def execute(input)
     input = input.downcase
     position = position_matching(input)
     matching_elements = number_of_matching_characters(@secret, input)
     if input == @secret
-      @turns += 1
+      increment_turn
       stop_tracking_time
       Response.new(:message => "Congratulations! You guessed the sequence '#{@secret}' in #{@turns} guesses in #{elapsed_time}", :status => :won)
     elsif input == "c"
       Response.new(:message => "#{@secret}", :status => :continue)
     elsif input == "q"
-      Response.new(:message => "Game quit", :status => :quit)
+      Response.new(:message => "Game quit, returning to main menu", :status => :quit)
     elsif input.size > 4
       Response.new(:message => "Your guess is too long", :status => :continue)
     elsif input.size < 4
       Response.new(:message => "Your guess is too short", :status => :continue)
     else 
-      @turns += 1
+      increment_turn
       Response.new(:message => "'#{input}' has #{matching_elements} matching elements at #{position} correct positions", :status => :continue)
     end
   end

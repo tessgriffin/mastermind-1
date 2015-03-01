@@ -48,6 +48,54 @@ class GameLogicTest < Minitest::Test
     assert_equal 0, game.number_of_matching_characters(game.secret, input)
   end
 
+  def test_it_can_count_4_matching_characters
+    game = GameLogic.new
+    input = "gybr"
+    game.secret = "ygrb"
+    assert_equal 4, game.number_of_matching_characters(game.secret, input)
+  end
+
+  def test_it_increments_a_turn
+    game = GameLogic.new
+    game.increment_turn
+    assert_equal 1, game.turns
+  end
+
+  def test_inputs_of_one_character_are_too_short
+    game = GameLogic.new
+    assert game.execute("r").message.include?("too short")
+  end
+
+  def test_inputs_of_two_characters_are_too_short
+    game = GameLogic.new
+    assert game.execute("rr").message.include?("too short")
+  end
+
+  def test_inputs_of_five_characters_are_too_long
+    game = GameLogic.new
+    assert game.execute("rrrrr").message.include?("too long")
+  end
+
+  def test_inputs_of_six_characters_are_too_long
+    game = GameLogic.new
+    assert game.execute("rrrrrb").message.include?("too long")
+  end
+
+  def test_it_can_cheat
+    game = GameLogic.new
+    assert_equal game.secret, game.execute("c").message
+  end
+
+  def test_it_can_win
+    game = GameLogic.new
+    assert game.execute("#{game.secret}").message.include?("Congratulations!")
+  end
+
+  def test_it_can_quit
+    game = GameLogic.new
+    assert game.execute("q").message.include?("Game quit")
+  end
+
 end
 
 

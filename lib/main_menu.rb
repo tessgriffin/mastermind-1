@@ -10,7 +10,7 @@ class MainMenu
       menu_response = gets.chomp
       if menu_response.include?("p")
         menu_response = game_loop
-      else menu_response == "i"
+      elsif menu_response == "i"
         printer.instructions
       end
     end
@@ -22,14 +22,14 @@ class MainMenu
     game = GameLogic.new
     response = nil
     until response && response.status == :won
-      print "> "
+      printer.print_carrot
       input = gets.chomp
       response = game.execute(input)
       puts response.message
       if response.status == :won
         printer.play_again
         play_again_input = gets.chomp
-        if play_again_input.include?("p")
+        if play_again_input.include?("r")
           printer.menu
           return "p"
         else
