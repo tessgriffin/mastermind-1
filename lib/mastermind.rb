@@ -6,6 +6,5 @@ printer = Printer.new
 
 printer.greeting
 printer.fancy_greeting
-printer.menu
 
 MainMenu.new.run
