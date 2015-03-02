@@ -67,8 +67,10 @@ class GameLogic
       cheat
     elsif input == "q"
       quit_in_game
+    elsif input.chars.all?{|char| ["r","y","g","b"].include?(char)} == false
+      incorrect_characters
     elsif input.size != 4
-      incorrect_size(input) 
+      incorrect_size(input)       
     else 
       incorrect_guess(input)
     end
@@ -101,6 +103,10 @@ class GameLogic
     end
   end
 
+  def incorrect_characters
+    Response.new(:message => "Please enter the letters (r)(g)(b)(y)", :status => :continue)
+  end
+
   def quit_in_game
     Response.new(:message => "Game quit, returning to main menu", :status => :quit)
   end
@@ -108,8 +114,6 @@ class GameLogic
   def cheat
     Response.new(:message => "#{@secret}", :status => :continue)
   end
-
-
 
 end
 

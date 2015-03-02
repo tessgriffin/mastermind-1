@@ -13,6 +13,18 @@ class GameLogicTest < Minitest::Test
     refute_equal nil, sequence
   end
 
+  def test_sequence_is_four_characters
+    game = GameLogic.new
+    sequence = game.generate
+    assert_equal 4, sequence.length
+  end
+
+  def test_sequence_is_a_string
+    game = GameLogic.new
+    sequence = game.generate
+    assert_equal String, sequence.class
+  end
+
   def test_it_can_count_matching_positions
     game = GameLogic.new
     input = "rrrr"
@@ -98,34 +110,3 @@ class GameLogicTest < Minitest::Test
 
 end
 
-
-#game = GameLogic.new
-#print game.number_of_matching_characters("bbry", "ybrb")
-#puts game.secret.join
-#puts game.position_matching("rrrr")
-
-
-#class Game
-#  def initialize(random_answer_generator)
-#    @random_answer_generator = random_answer_generator
-#  end
-#end
-
-#class FakeAnswerGenerator
-#  def initialize(known_answer)
-#    @known_answer = known_answer
-#  end
-
-#  def generate_random_answer
-#    @known_answer
-#  end
-#end
-
-#class RealAnswerGenerator
-#  def generate_random_answer
-    # I don't know you figure it out
-#  end
-#end
-
-
-#Game.new(FakeAnswerGenerator.new("RRGYB"))
